@@ -22,3 +22,13 @@ def validate_string(str_data) -> bool:
     pattern_2 = r'\w=\d{2}'
     
     return bool(re.search(pattern_1, str_data) or re.search(pattern_2, str_data))
+
+def read_file(path: str):
+    try: 
+        with open(path, 'r') as file: 
+            return json.load(file)
+
+
+
+    except Exception as e: 
+        print(f"Erro ao ler o arquivo. Erro: {e}")
