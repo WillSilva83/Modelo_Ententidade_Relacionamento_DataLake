@@ -1,6 +1,7 @@
+import sys
 from src.classes.Glue import Glue
 from src.utils.logging import config_logger
-from src.utils.external_libs import read_file, write_file
+from src.utils.external_libs import read_file, write_file, process_json_table_list, prepare_list_from_json
 
 logger = config_logger('Aplicacao para Criar ER de uma base Athena')
 client_glue = Glue()
@@ -61,11 +62,34 @@ def prepare_diagram_pattern(dict_table, relational_tables: str):
 
 if __name__ == '__main__':
 
-    list_tables = client_glue.get_list_tables("database_test")
+    '''
+        PROCESSA DIAGRAMA DE ENTIDADE E RELACIONAMENTO
+    '''
+
+    if len(sys.argv) < 4:
+        logger.error("Faltam parametros para execucao do script.")
+        sys.exit(1)
+
+    
+    ## Argumentos
+
+    database = sys.argv[1]
+    path_json = sys.argv[2]
+    output_file = sys.argv[3]
+
+
+    list_tables = prepare_list_from_json(path_json) 
+
+    dict_list_tables = client_glue.get_table(database, list_tables)
+
+    tables = process_json_table_list(dict_list_tables)
 
     er_diagram = {}
 
-    for table in list_tables:
+    ## Prepara para gerar o ER.
+
+    for table in tables:
+
         table_name = table['Table_Name']
         columns = table['Columns']
 
@@ -79,22 +103,10 @@ if __name__ == '__main__':
 
             er_diagram[table_name]['Columns'].append(column_info)
     
-        
-    #er_diagram = {'table1_test': {'Columns': [{'Name': 'id', 'Type': 'bigint'}, {'Name': 'descritivo1', 'Type': 'string'}, {'Name': 'descritivo2', 'Type': 'string'}, {'Name': 'descritivo3', 'Type': 'string'}]}, 'table_test_2': {'Columns': [{'Name': 'id', 'Type': 'bigint'}, {'Name': 'id_table_1', 'Type': 'bigint'}, {'Name': 'descritivo1', 'Type': 'string'}, {'Name': 'descritivo2', 'Type': 'string'}, {'Name': 'descritivo3', 'Type': 'string'}, {'Name': 'descritivo4', 'Type': 'string'}, {'Name': 'descritivo5', 'Type': 'string'}]}}
 
-    relational_tables = read_file("EXEMPLO_relational_tables.json")
+
+    relational_tables = read_file(path_json)
 
     output = prepare_diagram_pattern(er_diagram, relational_tables)
 
-    print(output)
-
-    #write_file(output, "ER_EXEMPLO.json", True)
-    
-
-    
-
-
-
-
-    
-    
+    write_file(output, output_file, False)

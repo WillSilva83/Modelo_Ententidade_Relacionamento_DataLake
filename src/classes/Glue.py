@@ -1,49 +1,12 @@
 import boto3 
 from src.utils.logging import config_logger
+from src.utils.external_libs import process_json_table_list
 
 logger = config_logger('App Tables S3 X Athena')
-
-
-def process_json_table_list(tables_list_response: dict) -> list:
-    '''
-    
-    '''
-    
-    output_list = []
-
-    for table in tables_list_response:
-        dict_itens = {}
-        
-        try: 
-        
-            dict_itens["Table_Name"] = table["Name"]
-            
-            # Adicionado para padronizar
-            if not table["StorageDescriptor"]["Location"].endswith('/'):
-                table["StorageDescriptor"]["Location"] += '/'
-            
-            dict_itens["Location"] = table["StorageDescriptor"]["Location"]
-            dict_itens["TableType"] = table["TableType"]
-            dict_itens["Columns"] = table['StorageDescriptor']['Columns']
-            dict_itens["IsVerify"] = False
-            
-            output_list.append(dict_itens)
-        
-        except Exception as e: 
-            logger.warning("Tabela " + table["Name"] + " não foi adicionada.")     
-            dict_itens["Table_Error"] = table["Name"]
-            dict_itens["Location"] = ""
-            dict_itens["Columns"] = []
-            dict_itens["IsVerify"] = False
-            output_list.append(dict_itens)
-
-    return output_list
 
 class Glue():
     def __init__(self) -> None:
         pass
-
- 
 
     def get_list_tables(self, database:str, glue = boto3.client('glue')) -> list:
         ''' 
@@ -68,6 +31,24 @@ class Glue():
         except Exception as e:
             print(f"Erro ao retornar tabelas do Database: {database}. Erro: {e}")
 
+    def get_table(self, database_name:str, list_tables: list, glue = boto3.client('glue')) -> dict: 
+        ''' Return Columns Tables'''
+
+        out_respose = []
+
+        for table in list_tables:
+            try: 
+                response = glue.get_table(DatabaseName=database_name, Name=table) 
+                out_respose.append(response)
+
+
+            except Exception as e: 
+                print(f"Erro ao retornar a tabela {table}. Erro: {e}")
+                return []
+            
+        return out_respose
+    
+            
     
 
 

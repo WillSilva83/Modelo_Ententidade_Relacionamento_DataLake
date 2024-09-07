@@ -1,3 +1,5 @@
 /aws
 *pyc
 *ER_EXEMPLO*
+*.pyc
+*/__pycache__/*
