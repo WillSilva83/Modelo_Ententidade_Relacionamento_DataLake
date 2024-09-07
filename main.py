@@ -59,8 +59,6 @@ def prepare_diagram_pattern(dict_table, relational_tables: str):
     return output
 
 
-
-
 if __name__ == '__main__':
 
     list_tables = client_glue.get_list_tables("database_test")
