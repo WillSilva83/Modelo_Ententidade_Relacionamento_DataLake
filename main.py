@@ -23,6 +23,8 @@ def prepare_diagram_pattern(dict_table):
 
 
 
+
+
 if __name__ == '__main__':
 
     # list_tables = client_glue.get_list_tables("database_test")
