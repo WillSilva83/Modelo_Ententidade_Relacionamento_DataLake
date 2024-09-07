@@ -1,0 +1,17 @@
+{
+    "table1_test": {
+        "PK" : "id"
+
+    },
+
+    "table_test_2" :{
+        "PK" : "id",
+        "FK" : "table_test_2.id_table_1 - table1_test.id"
+    },
+
+    "tabela_3" : {
+        "PK" : "id",
+        "FK" : "tabela_3.id_tabela_1 - table1_test.id | tabela_3.id_tabela_2 - table_test_2.id"
+    }
+
+}
