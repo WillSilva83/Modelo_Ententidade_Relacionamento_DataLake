@@ -20,23 +20,23 @@ database    - Corresponde ao Database no Amazon Glue.
 
 É apenas necessário explicitar apenas o nome da tabela que existe no 
 
-```json
 Exemplo de JSON 
+```json
 
 {
-    "NOME_TABELA_1": {
-        "PK" : "id"
+    "nome_tabela_1": {
+        "pk" : "id"
 
     },
 
-    "NOME_TABELA_2" :{
-        "PK" : "id",
-        "FK" : "NOME_TABELA_1.ID_TABELA_1 - NOME_TABELA_2.ID_TABELA_1"
+    "nome_tabela_2" :{
+        "pk" : "id",
+        "fk" : "nome_tabela_1.id_tabela_1 - nome_tabela_2.id_tabela_1"
     },
 
-    "NOME_TABELA_3" : {
-        "PK" : "id",
-        "FK" : "NOME_TABELA_1.ID_TABELA_1 - NOME_TABELA_3.ID_TABELA_1 | NOME_TABELA_2.ID_TABELA_2 - NOME_TABELA_3.ID_TABELA_2"
+    "nome_tabela_3" : {
+        "pk" : "id",
+        "fk" : "nome_tabela_1.id_tabela_1 - nome_tabela_3.id_tabela_1 | nome_tabela_2.id_tabela_2 - nome_tabela_3.id_tabela_2"
     }
 }
 ```
@@ -51,3 +51,42 @@ FK  - Corresponde ao relacionamento entre tabelas.
 
 "|" - Corresponde a separação de relacionamentos entre tabelas.
 
+
+### Exemplo de Output
+```plaintext
+Table nome_tabela_1  { 
+    id_tabela_1 bigint [primary key] 
+    descritivo1 string  
+    descritivo2 string  
+    descritivo3 string  
+}
+
+
+Table nome_tabela_2  { 
+    id_tabela_2 bigint [primary key] 
+    id_tabela_1 bigint  
+    descritivo1 string  
+    descritivo2 string  
+    descritivo3 string  
+    descritivo4 string  
+    descritivo5 string  
+}
+
+Ref: "nome_tabela_2"."id_tabela_1" - "nome_tabela_1"."id_tabela_1" 
+
+Table nome_tabela_3  { 
+    id_tabela_3 bigint [primary key] 
+    coluna2 decimal  
+    coluna3 string  
+    coluna4 string  
+    id_tabela_1 bigint  
+    id_tabela_2 bigint  
+}
+
+Ref: "nome_tabela_3"."id_tabela_1" - "nome_tabela_1"."id_tabela_1" 
+Ref: "nome_tabela_3"."id_tabela_2" - "nome_tabela_2"."id_tabela_2" 
+
+```
+### Modelo de ER (Entidade Relacionamento)
+
+![alt text](image.png)

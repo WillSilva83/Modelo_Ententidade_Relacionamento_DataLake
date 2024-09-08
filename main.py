@@ -9,8 +9,8 @@ client_glue = Glue()
 
 def verify_relational_FK(table_name: str, relational_tables: dict) -> str:
     # Verifica se 'FK' está presente no dicionário da tabela
-    if 'FK' in relational_tables[table_name]:
-        fk_value = relational_tables[table_name]['FK']
+    if 'fk' in relational_tables[table_name]:
+        fk_value = relational_tables[table_name]['fk']
 
         # Divide as múltiplas associações por '|'
         associations = fk_value.split(" | ")
@@ -36,7 +36,7 @@ def verify_relational_PK(table_name: str, column_name: str, relational_tables: d
 
     ## VERIFICAR A PK PRIMEIRO 
 
-    if relational_tables[table_name]['PK'] == column_name:
+    if relational_tables[table_name]['pk'] == column_name:
         return "[primary key]"
     else:
         return ""
@@ -77,16 +77,42 @@ if __name__ == '__main__':
     path_json = sys.argv[2]
     output_file = sys.argv[3]
 
+    logger.info("Lista de Argumentos:")
+    logger.info(f"Database: {database}")
+    logger.info(f"Arquivo JSON: {path_json}")
+    logger.info(f"Output de ER: {output_file}")
 
-    list_tables = prepare_list_from_json(path_json) 
+    # Necessario a lista de tabelas que serao consultadas
+    logger.info(f"Lendo o arquivo: {path_json}")
 
-    dict_list_tables = client_glue.get_table(database, list_tables)
+    try: 
+        list_tables = prepare_list_from_json(path_json)
+        relational_tables = read_file(path_json)
+    
+    except Exception as e:
+        logger.error(f"Erro ao ler o arquivo {path_json}. Erro: {e}")
+        sys.exit(1)
+    
+    try:
+        logger.info("Listando tabelas da API Glue.")
+        dict_list_tables = client_glue.get_table(database, list_tables)
 
+        if not dict_list_tables:
+            logger.error(f"Nenhuma tabela foi encontrada. Programa encerra.")
+            sys.exit(1)
+
+    except Exception as e:
+        logger.error(f"Erro ao retornar a listagem de tabelas. Erro: {e}")
+
+    logger.info("Preparacao do JSON.")
     tables = process_json_table_list(dict_list_tables)
+
 
     er_diagram = {}
 
     ## Prepara para gerar o ER.
+
+    logger.info("Estrutura do dicionario para gerar o diagrama ER.")
 
     for table in tables:
 
@@ -103,10 +129,18 @@ if __name__ == '__main__':
 
             er_diagram[table_name]['Columns'].append(column_info)
     
+    logger.info("Estrutura do dicionario para gerar o diagrama ER.")
 
+    try:
+        logger.info("Geracao do Diagrama.")
+        output = prepare_diagram_pattern(er_diagram, relational_tables)
 
-    relational_tables = read_file(path_json)
+    except Exception as e: 
+        logger.error(f"Erro ao Gerar o Diagrama. Erro: {e}")
 
-    output = prepare_diagram_pattern(er_diagram, relational_tables)
-
-    write_file(output, output_file, False)
+    try: 
+        logger.info("Escrevendo o arquivo final.")
+        write_file(output, output_file, False)
+    
+    except Exception as e:
+        logger.error(f"Erro ao escrever o arquivo final. Erro: {e}")
