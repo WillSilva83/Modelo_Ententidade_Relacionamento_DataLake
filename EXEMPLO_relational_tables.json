@@ -10,7 +10,7 @@
     },
 
     "tabela_3" : {
-        "pk" : "id",
+        "pk" : "id,id_tabela_1,id_tabela_2",
         "fk" : "tabela_3.id_tabela_1 - table1_test.id | tabela_3.id_tabela_2 - table_test_2.id"
     }
 

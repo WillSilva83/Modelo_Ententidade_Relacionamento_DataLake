@@ -36,13 +36,14 @@ def verify_relational_PK(table_name: str, column_name: str, relational_tables: d
     '''
         Verificar se na tabela existe PK e adiciona na linha 
     '''
-   
 
-    if relational_tables[table_name]['pk'] == column_name:
-        return "primary key,"
-    else:
-        return ""
+    input_list = relational_tables[table_name]['pk'].split(',')
     
+    if column_name in input_list:
+        return "pk,"    
+    else: 
+        return ""
+               
 def prepare_diagram_pattern(dict_table, relational_tables: str):
     '''
         Funcao para criar no padrao do https://dbdiagram.io
