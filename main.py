@@ -133,8 +133,6 @@ if __name__ == '__main__':
                 'Comment' : column['Comment']
             }
 
-            print(column_info)
-
             er_diagram[table_name]['Columns'].append(column_info)
     
     logger.info("Estrutura do dicionario para gerar o diagrama ER.")
