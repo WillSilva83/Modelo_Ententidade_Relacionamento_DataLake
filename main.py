@@ -8,17 +8,17 @@ client_glue = Glue()
 
 
 def verify_relational_FK(table_name: str, relational_tables: dict) -> str:
-    # Verifica se 'FK' está presente no dicionário da tabela
+    
     if 'fk' in relational_tables[table_name]:
         fk_value = relational_tables[table_name]['fk']
 
-        # Divide as múltiplas associações por '|'
         associations = fk_value.split(" | ")
         
         output = ""
+        
         # Processa cada associação individualmente
         for association in associations:
-            # Divide a associação em partes esquerda e direita
+            #  Aceita apeans relacionamento 1:1 # TO DO ADICIONAR MAIS RELACIONAMENTOS
             left_part, right_part = association.split(" - ")
             
             # Separa tabela e coluna da parte esquerda e direita
@@ -33,11 +33,13 @@ def verify_relational_FK(table_name: str, relational_tables: dict) -> str:
         return ""
      
 def verify_relational_PK(table_name: str, column_name: str, relational_tables: dict) -> str:
-
-    ## VERIFICAR A PK PRIMEIRO 
+    '''
+        Verificar se na tabela existe PK e adiciona na linha 
+    '''
+   
 
     if relational_tables[table_name]['pk'] == column_name:
-        return "[primary key]"
+        return "primary key,"
     else:
         return ""
     
@@ -51,7 +53,7 @@ def prepare_diagram_pattern(dict_table, relational_tables: str):
 
         for column in dict_table[table]['Columns']:
             
-            output += f'''    {column['Name']} {column['Type']} {verify_relational_PK(table, column['Name'], relational_tables)} \n''' 
+            output += f'''    {column['Name']} {column['Type']} [{verify_relational_PK(table, column['Name'], relational_tables)} note: '{column['Comment']}'] \n''' 
         
         output += '''}\n\n'''
         
@@ -103,6 +105,7 @@ if __name__ == '__main__':
 
     except Exception as e:
         logger.error(f"Erro ao retornar a listagem de tabelas. Erro: {e}")
+        sys.exit(1)
 
     logger.info("Preparacao do JSON.")
     tables = process_json_table_list(dict_list_tables)
@@ -116,6 +119,8 @@ if __name__ == '__main__':
 
     for table in tables:
 
+        logger.info(f"Processando Tabela: {table['Table_Name']}")
+
         table_name = table['Table_Name']
         columns = table['Columns']
 
@@ -124,8 +129,11 @@ if __name__ == '__main__':
         for column in columns:
             column_info = {
                 'Name': column['Name'],
-                'Type': column['Type']
+                'Type': column['Type'], 
+                'Comment' : column['Comment']
             }
+
+            print(column_info)
 
             er_diagram[table_name]['Columns'].append(column_info)
     

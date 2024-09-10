@@ -32,7 +32,7 @@ class Glue():
             print(f"Erro ao retornar tabelas do Database: {database}. Erro: {e}")
 
     def get_table(self, database_name:str, list_tables: list, glue = boto3.client('glue')) -> dict: 
-        ''' Return Columns Tables'''
+        ''' Return Columns Tables '''
 
         out_respose = []
 
